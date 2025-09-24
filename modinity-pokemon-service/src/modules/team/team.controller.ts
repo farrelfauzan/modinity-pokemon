@@ -11,6 +11,7 @@ import {
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { UpdateTeamDto } from './dto/update-team.dto';
 
 @ApiTags('Team')
 @Controller('team')
@@ -35,7 +36,7 @@ export class TeamController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateTeamDto: CreateTeamDto,
+    @Body() updateTeamDto: UpdateTeamDto,
   ) {
     return this.teamService.update(id, updateTeamDto);
   }
