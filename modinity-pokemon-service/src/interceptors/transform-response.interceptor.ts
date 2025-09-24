@@ -15,12 +15,11 @@ export class TransformResponseInterceptor implements NestInterceptor {
   ): Observable<IResponse> {
     return next.handle().pipe(
       map((response) => {
-        const { data, meta } = response;
+        const { data } = response;
 
         return {
           statusCode: context.switchToHttp().getResponse().statusCode,
           data,
-          meta,
         };
       }),
     );
