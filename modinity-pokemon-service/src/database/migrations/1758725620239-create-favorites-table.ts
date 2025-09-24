@@ -6,7 +6,6 @@ export class CreateFavoritesTable1758725620239 implements MigrationInterface {
       CREATE TABLE "favorites" (
         "id" INTEGER PRIMARY KEY AUTOINCREMENT,
         "pokemonName" VARCHAR NOT NULL,
-        "pictureUrl" VARCHAR NOT NULL,
         "createdAt" DATETIME DEFAULT (datetime('now')),
         "updatedAt" DATETIME DEFAULT (datetime('now')),
         "deletedAt" DATETIME
