@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
 import { ClassSerializerInterceptor } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export async function bootstrap(): Promise<NestFastifyApplication> {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -28,6 +29,18 @@ export async function bootstrap(): Promise<NestFastifyApplication> {
     new ClassSerializerInterceptor(reflector),
     new TransformResponseInterceptor(),
   );
+
+  const swagger = new DocumentBuilder()
+    .setTitle('Modinity Pokemon Service')
+    .setDescription('The Modinity Pokemon Service API description')
+    .setVersion('1.0')
+    .addTag('pokemon')
+    .build();
+
+  const documentFactory = () => SwaggerModule.createDocument(app, swagger);
+  SwaggerModule.setup('api-docs', app, documentFactory(), {
+    swaggerOptions: { docExpansion: 'none' },
+  });
 
   await app.listen(appConfig.port, '0.0.0.0');
 

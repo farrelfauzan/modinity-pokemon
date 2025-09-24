@@ -25,6 +25,7 @@
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/database/data-source.ts"
   },
   "dependencies": {
+    "@fastify/static": "7.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "4.0.2",
     "@nestjs/core": "^10.0.0",

@@ -14,12 +14,9 @@ const options: SourceOptions = {
   database: String(
     configService.getOrThrow('DB_PATH') || join(__dirname, '../../db.sqlite'),
   ),
-  entities: [__dirname + '/../**/*.orm-entity.{ts,js}'],
+  entities: [__dirname + '/../../modules/**/*.entity{.ts,.js}'],
   migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
   migrationsTableName: 'migrations',
-  // synchronize:
-  //   configService.getOrThrow('NODE_ENV') === 'development' &&
-  //   Boolean(+configService.getOrThrow('SYNCHRONIZE')),
 };
 
 export default new DataSource(options);

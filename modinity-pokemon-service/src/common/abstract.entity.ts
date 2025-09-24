@@ -11,17 +11,17 @@ export abstract class AbstractEntity extends BaseEntity {
   id: number;
 
   @CreateDateColumn({
-    type: 'timestamp',
+    type: 'datetime',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'timestamp',
+    type: 'datetime',
   })
   updatedAt: Date;
 
   @DeleteDateColumn({
-    type: 'timestamp',
+    type: 'datetime',
   })
   deletedAt: Date;
 }
