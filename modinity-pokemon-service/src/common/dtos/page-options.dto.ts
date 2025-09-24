@@ -1,6 +1,6 @@
 import { IsObject, IsOptional } from 'class-validator';
 
-import { Order } from '../../constants';
+import { Order } from '../../enum';
 import {
   EnumFieldOptional,
   NumberFieldOptional,

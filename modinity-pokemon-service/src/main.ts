@@ -4,6 +4,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import { TransformResponseInterceptor } from './interceptors/transform-response.interceptor';
 import { ClassSerializerInterceptor } from '@nestjs/common';
@@ -16,6 +17,7 @@ export async function bootstrap(): Promise<NestFastifyApplication> {
     }),
     { cors: true },
   );
+  const appConfig = app.get(ConfigService).get('app');
 
   app.use(helmet());
   app.setGlobalPrefix('/api');
@@ -27,11 +29,7 @@ export async function bootstrap(): Promise<NestFastifyApplication> {
     new TransformResponseInterceptor(),
   );
 
-  const configService = app.get('ConfigService');
-
-  const port = configService.get('PORT') ?? 3000;
-
-  await app.listen(port, '0.0.0.0');
+  await app.listen(appConfig.port, '0.0.0.0');
 
   return app;
 }
