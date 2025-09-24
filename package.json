@@ -1,0 +1,12 @@
+{
+  "name": "modinity-pokemon",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-service": "cd modinity-pokemon-service && npm start:dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
