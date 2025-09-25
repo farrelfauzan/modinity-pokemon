@@ -33,8 +33,11 @@ export function Pokemon() {
     onTypeChange: (type: PokemonTypeName | null) => void;
   }>({
     selectedType: null,
-    onTypeChange: (type) =>
-      setTypeFilter((prev) => ({ ...prev, selectedType: type })),
+    onTypeChange: (type) => {
+      // Reset to page 1 when user selects a new type
+      setCurrentPage(1);
+      setTypeFilter((prev) => ({ ...prev, selectedType: type }));
+    },
   });
   const [typeFilteredPokemon, setTypeFilteredPokemon] = useState<PokemonType[]>(
     []
@@ -123,10 +126,6 @@ export function Pokemon() {
         }
       }
       setAllPokemons([]);
-
-      if (!searchState.searchTerm) {
-        setCurrentPage(1);
-      }
     } catch (error) {
       setTypeFilteredPokemon([]);
     }
@@ -135,6 +134,7 @@ export function Pokemon() {
   const handleSearch = async () => {
     if (!searchState.searchTerm) {
       setSearchState((prev) => ({ ...prev, searchResult: null }));
+      setAllFilteredResults([]);
       if (typeFilter.selectedType) {
         loadPokemonByType(typeFilter.selectedType);
       } else {
@@ -145,6 +145,9 @@ export function Pokemon() {
 
     try {
       setSearchState((prev) => ({ ...prev, searching: true }));
+
+      // Reset to page 1 when starting a new search
+      setCurrentPage(1);
 
       if (typeFilter.selectedType) {
         await loadPokemonByType(typeFilter.selectedType);
@@ -159,12 +162,11 @@ export function Pokemon() {
             const urls = matches.map((m) => m.url);
             const detailed = await getPokemonsByUrl(urls);
 
-            // Store all search results and calculate pagination
             setAllFilteredResults(detailed);
             setTotalPages(Math.ceil(detailed.length / itemsPerPage));
 
-            // Show only current page results
-            const paginatedResults = paginateResults(detailed, currentPage);
+            // Use page 1 since we just reset currentPage above
+            const paginatedResults = paginateResults(detailed, 1);
             setAllPokemons(paginatedResults);
             setTypeFilteredPokemon([]);
           } else {
