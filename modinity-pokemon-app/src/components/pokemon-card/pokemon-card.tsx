@@ -30,7 +30,10 @@ export function PokemonCard({
   const [imageError, setImageError] = useState(false);
 
   return (
-    <Card className="retro-border hover:shadow-lg transition-shadow cursor-pointer group">
+    <Card
+      className="retro-border hover:shadow-lg transition-shadow cursor-pointer group"
+      onClick={() => onViewDetails(pokemon)}
+    >
       <CardHeader className="text-center pb-2">
         <div className="w-24 h-24 mx-auto bg-secondary rounded-lg flex items-center justify-center retro-border overflow-hidden">
           {!imageError ? (
@@ -70,7 +73,7 @@ export function PokemonCard({
             </Badge>
           ))}
         </div>
-        <div className="grid grid-cols-3 gap-1 text-xs">
+        <div className="grid grid-cols-2 gap-1 text-xs">
           <Button
             size="sm"
             variant={isFavorite ? "default" : "outline"}
@@ -94,15 +97,6 @@ export function PokemonCard({
           >
             <Users className="w-3 h-3" />
           </Button>
-          <Link href={`/pokemon/${pokemon.id}`}>
-            <Button
-              size="sm"
-              variant="outline"
-              className="pixel-font p-1 bg-transparent w-full"
-            >
-              <Eye className="w-3 h-3" />
-            </Button>
-          </Link>
         </div>
       </CardContent>
     </Card>

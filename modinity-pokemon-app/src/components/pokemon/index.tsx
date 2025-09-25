@@ -12,8 +12,10 @@ import { extractPokemonId } from "@/utils/pokemon";
 import { Pokemon as PokemonType } from "@/types/pokemon";
 import { toast } from "sonner";
 import { PokemonTypeName } from "@/constants/pokemon-types";
+import { useRouter } from "next/navigation";
 
 export function Pokemon() {
+  const router = useRouter();
   const [allPokemon, setAllPokemons] = useState<PokemonType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -232,7 +234,9 @@ export function Pokemon() {
       favorites={[]}
       team={[]}
       pokemon={allPokemon}
-      onViewDetails={() => {}}
+      onViewDetails={(pokemon) => {
+        router.push(`/pokemon/${pokemon.id}`);
+      }}
       onToggleFavorite={() => {}}
       onAddToTeam={() => {}}
       pagination={{
