@@ -49,6 +49,11 @@ export interface TypePokemonResponse {
   }>;
 }
 
+export type PokemonRequestParams = {
+  offset?: number;
+  limit?: number;
+};
+
 // const POKEMON_API_BASE = "https://pokeapi.co/api/v2";
 
 // export async function fetchPokemonList(
