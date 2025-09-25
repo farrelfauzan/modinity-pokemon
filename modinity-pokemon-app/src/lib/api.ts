@@ -26,15 +26,6 @@ export const apiBaseQueryPokedex: BaseQueryFn<
   if (error) {
     const err: BaseErrorResponse = error as BaseErrorResponse;
 
-    toast("Error", {
-      description:
-        JSON.stringify(err?.data?.message) || "Internal Server Error",
-      action: {
-        label: "Close",
-        onClick: () => toast.dismiss(),
-      },
-    });
-
     return { error };
   }
 
