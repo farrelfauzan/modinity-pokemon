@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  useGetPokemonByNameQuery,
   useGetPokemonsQuery,
   useLazyGetPokemonByIdQuery,
+  useLazyGetPokemonByNameQuery,
   useLazyGetPokemonsByTypeQuery,
   useLazyGetPokemonsQuery,
 } from "@/services/pokemon/pokemon";
@@ -13,10 +15,16 @@ import { Pokemon as PokemonType } from "@/types/pokemon";
 import { toast } from "sonner";
 import { PokemonTypeName } from "@/constants/pokemon-types";
 import { useRouter } from "next/navigation";
+import {
+  useCreateFavoriteMutation,
+  useGetFavoritesQuery,
+  useLazyGetFavoritesQuery,
+} from "@/services/favorite/favorite";
 
 export function Pokemon() {
   const router = useRouter();
   const [allPokemon, setAllPokemons] = useState<PokemonType[]>([]);
+  const [favoritePokemon, setFavoritePokemon] = useState<PokemonType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchState, setSearchState] = useState<{
@@ -57,6 +65,12 @@ export function Pokemon() {
   const [getPokemonsByType, { isFetching: loadingPokemonsByType }] =
     useLazyGetPokemonsByTypeQuery();
   const [getPokemons, { data: pokemonsData }] = useLazyGetPokemonsQuery();
+  const [getPokemonByName, { data: pokemonByName }] =
+    useLazyGetPokemonByNameQuery();
+
+  const [createFavorite, { isSuccess: successCreateFavorite }] =
+    useCreateFavoriteMutation();
+  const { data: favorites, refetch: refetchFavorites } = useGetFavoritesQuery();
 
   const getPokemonsByUrl = async (urls: string[]) => {
     const promises = urls.map(async (url) => {
@@ -97,7 +111,6 @@ export function Pokemon() {
           )
         );
 
-        // If searchTerm is present, filter matches by searchTerm as well
         if (searchState.searchTerm && matches && matches.length > 0) {
           const searchTerm = searchState.searchTerm.toLowerCase();
           matches = matches.filter((p) =>
@@ -146,7 +159,6 @@ export function Pokemon() {
     try {
       setSearchState((prev) => ({ ...prev, searching: true }));
 
-      // Reset to page 1 when starting a new search
       setCurrentPage(1);
 
       if (typeFilter.selectedType) {
@@ -190,6 +202,34 @@ export function Pokemon() {
     }
   };
 
+  const loadFavorites = async () => {
+    try {
+      favorites?.data.forEach(async (fav) => {
+        const result = await getPokemonByName(fav.pokemonName).unwrap();
+        setFavoritePokemon((prev) => [...prev, result]);
+      });
+    } catch (error) {
+      console.error("Failed to load favorites:", error);
+    }
+  };
+
+  const createFavoriteHandler = async (pokemon: PokemonType) => {
+    try {
+      await createFavorite({
+        pokemonName: pokemon.name,
+      });
+      toast.success(`${pokemon.name} added to favorites!`);
+      setFavoritePokemon((prev) => {
+        if (prev.some((p) => p.name === pokemon.name)) return prev;
+        return [...prev, pokemon];
+      });
+      refetchFavorites();
+    } catch (error) {
+      console.error("Failed to add favorite:", error);
+      toast.error("Failed to add to favorites.");
+    }
+  };
+
   useEffect(() => {
     if (typeFilter.selectedType) {
       loadPokemonByType(typeFilter.selectedType);
@@ -228,18 +268,28 @@ export function Pokemon() {
   ]);
 
   useEffect(() => {
+    if ((favorites?.data ?? []).length > 0 || successCreateFavorite) {
+      loadFavorites();
+    } else {
+      setFavoritePokemon([]);
+    }
+  }, [favorites]);
+
+  useEffect(() => {
     getPokemons({ offset: 0, limit: 2000 });
   }, []);
 
   return (
     <PokemonList
-      favorites={[]}
+      favorites={favoritePokemon}
       team={[]}
       pokemon={allPokemon}
       onViewDetails={(pokemon) => {
         router.push(`/pokemon/${pokemon.id}`);
       }}
-      onToggleFavorite={() => {}}
+      onToggleFavorite={(pokemon) => {
+        createFavoriteHandler(pokemon);
+      }}
       onAddToTeam={() => {}}
       pagination={{
         currentPage,

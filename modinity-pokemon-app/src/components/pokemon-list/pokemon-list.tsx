@@ -60,12 +60,6 @@ export function PokemonList({
     ? typeFilteredPokemon
     : pokemon;
 
-  console.log("Display Pokemon:", displayPokemon, {
-    searchResult: search.searchResult,
-    typeFilteredPokemon,
-    allPokemon: pokemon,
-  });
-
   return (
     <div className="space-y-6">
       <SearchControls

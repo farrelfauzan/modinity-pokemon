@@ -6,3 +6,8 @@ export type BaseErrorResponse = {
     statusCode: number;
   };
 };
+
+export type BaseResponse<T> = {
+  status: number;
+  data: T;
+};

@@ -16,6 +16,29 @@ const baseQueryPokedex = fetchBaseQuery({
   },
 });
 
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:3001/api",
+  paramsSerializer: (params) => qs.stringify(params),
+  prepareHeaders: (headers) => {
+    return headers;
+  },
+});
+
+export const apiBaseQuery: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  const { error, data } = await baseQuery(args, api, extraOptions);
+  if (error) {
+    const err: BaseErrorResponse = error as BaseErrorResponse;
+    toast.error(err?.data?.message || "An error occurred");
+    return { error };
+  }
+
+  return { data };
+};
+
 export const apiBaseQueryPokedex: BaseQueryFn<
   string | FetchArgs,
   unknown,
