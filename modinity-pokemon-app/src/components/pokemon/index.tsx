@@ -96,7 +96,6 @@ export function Pokemon() {
         searching: false,
         searchResult: null,
       }));
-      setAllPokemons([]);
       setTotalPages(1);
       setCurrentPage(1);
     }

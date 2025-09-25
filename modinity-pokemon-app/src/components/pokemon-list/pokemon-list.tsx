@@ -1,13 +1,8 @@
 "use client";
 
-import { Pokemon, PokemonListResponse } from "@/types/pokemon";
+import { Pokemon } from "@/types/pokemon";
 import { SearchControls } from "../search-controls";
-import { useState } from "react";
 import { PokemonCard } from "../pokemon-card/pokemon-card";
-import {
-  useGetPokemonsQuery,
-  useLazyGetPokemonByNameQuery,
-} from "@/services/pokemon/pokemon";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -45,7 +40,6 @@ export function PokemonList({
   search,
   loading = false,
 }: IPokemonListProps) {
-  console.log(loading);
   const isFavorite = (p: Pokemon) => favorites.some((fav) => fav.id === p.id);
   const isInTeam = (p: Pokemon) => team.some((member) => member.id === p.id);
 
