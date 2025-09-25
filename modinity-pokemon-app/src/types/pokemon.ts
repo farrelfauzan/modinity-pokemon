@@ -1,4 +1,3 @@
-// Pokemon API utilities and types
 export interface Pokemon {
   id: number;
   name: string;
@@ -30,6 +29,36 @@ export interface Pokemon {
   weight: number;
 }
 
+export interface PokemonByTypeResponse {
+  damage_relations: {
+    double_damage_from: Array<{ name: string; url: string }>;
+    double_damage_to: Array<{ name: string; url: string }>;
+    half_damage_from: Array<{ name: string; url: string }>;
+    half_damage_to: Array<{ name: string; url: string }>;
+    no_damage_from: Array<{ name: string; url: string }>;
+    no_damage_to: Array<{ name: string; url: string }>;
+  };
+  game_indices: Array<{
+    game_index: number;
+    generation: { name: string; url: string };
+  }>;
+  generation: { name: string; url: string };
+  id: number;
+  move_damage_class: { name: string; url: string };
+  moves: Array<{ name: string; url: string }>;
+  name: string;
+  names: Array<{
+    language: { name: string; url: string };
+    name: string;
+  }>;
+  past_damage_relations: any[];
+  pokemon: Array<{
+    pokemon: { name: string; url: string };
+    slot: number;
+  }>;
+  sprites: Record<string, Record<string, { name_icon: string }>>;
+}
+
 export interface PokemonListResponse {
   count: number;
   next: string | null;
@@ -42,10 +71,8 @@ export interface PokemonListResponse {
 
 export interface TypePokemonResponse {
   pokemon: Array<{
-    pokemon: {
-      name: string;
-      url: string;
-    };
+    pokemon: { name: string; url: string };
+    slot: number;
   }>;
 }
 
@@ -53,88 +80,6 @@ export type PokemonRequestParams = {
   offset?: number;
   limit?: number;
 };
-
-// const POKEMON_API_BASE = "https://pokeapi.co/api/v2";
-
-// export async function fetchPokemonList(
-//   offset = 0,
-//   limit = 20
-// ): Promise<PokemonListResponse> {
-//   const response = await fetch(
-//     `${POKEMON_API_BASE}/pokemon?offset=${offset}&limit=${limit}`
-//   );
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch Pokemon list");
-//   }
-//   return response.json();
-// }
-
-// export async function fetchPokemon(
-//   nameOrId: string | number
-// ): Promise<Pokemon> {
-//   const response = await fetch(`${POKEMON_API_BASE}/pokemon/${nameOrId}`);
-//   if (!response.ok) {
-//     throw new Error(`Failed to fetch Pokemon: ${nameOrId}`);
-//   }
-//   return response.json();
-// }
-
-// export async function searchPokemon(query: string): Promise<Pokemon | null> {
-//   try {
-//     return await fetchPokemon(query.toLowerCase());
-//   } catch {
-//     return null;
-//   }
-// }
-
-// export async function fetchPokemonByType(type: string): Promise<Pokemon[]> {
-//   try {
-//     const response = await fetch(
-//       `${POKEMON_API_BASE}/type/${type.toLowerCase()}`
-//     );
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch Pokemon by type: ${type}`);
-//     }
-
-//     const data: TypePokemonResponse = await response.json();
-
-//     // Get first 50 Pokemon of this type to avoid overwhelming the UI
-//     const pokemonUrls = data.pokemon.slice(0, 50);
-
-//     // Fetch detailed data for each Pokemon
-//     const pokemonDetails = await Promise.all(
-//       pokemonUrls.map(async (entry) => {
-//         const id = getPokemonIdFromUrl(entry.pokemon.url);
-//         // Only fetch Pokemon from the first 1000 (to avoid regional variants and special forms)
-//         if (id <= 1000) {
-//           try {
-//             return await fetchPokemon(id);
-//           } catch {
-//             return null;
-//           }
-//         }
-//         return null;
-//       })
-//     );
-
-//     // Filter out null results and sort by ID
-//     return pokemonDetails
-//       .filter((pokemon): pokemon is Pokemon => pokemon !== null)
-//       .sort((a, b) => a.id - b.id);
-//   } catch (error) {
-//     console.error(`Error fetching Pokemon by type ${type}:`, error);
-//     return [];
-//   }
-// }
-
-// export function getPokemonIdFromUrl(url: string): number {
-//   const matches = url.match(/\/pokemon\/(\d+)\//);
-//   return matches ? Number.parseInt(matches[1]) : 0;
-// }
-
-// export function formatPokemonName(name: string): string {
-//   return name.charAt(0).toUpperCase() + name.slice(1);
-// }
 
 export function getTypeColor(type: string): string {
   const typeColors: Record<string, string> = {

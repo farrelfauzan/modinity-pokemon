@@ -5,6 +5,8 @@ import { SearchControls } from "../search-controls";
 import { PokemonCard } from "../pokemon-card/pokemon-card";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import { TypeFilter } from "../type-filter/type-filter";
+import { PokemonTypeName } from "@/constants/pokemon-types";
 
 type IPokemonListProps = {
   pokemon: Pokemon[];
@@ -26,7 +28,13 @@ type IPokemonListProps = {
     searching?: boolean;
     clearSearch?: () => void;
   };
+  typeFilter?: {
+    selectedType: PokemonTypeName | null;
+    onTypeChange: (type: PokemonTypeName | null) => void;
+  };
   loading?: boolean;
+  typeFilteredPokemon?: Pokemon[];
+  loadingType?: boolean;
 };
 
 export function PokemonList({
@@ -38,12 +46,19 @@ export function PokemonList({
   onAddToTeam,
   pagination,
   search,
+  typeFilter,
   loading = false,
+  typeFilteredPokemon,
+  loadingType = false,
 }: IPokemonListProps) {
   const isFavorite = (p: Pokemon) => favorites.some((fav) => fav.id === p.id);
   const isInTeam = (p: Pokemon) => team.some((member) => member.id === p.id);
 
-  const displayPokemon = search.searchResult ? [search.searchResult] : pokemon;
+  const displayPokemon = search.searchResult
+    ? [search.searchResult]
+    : typeFilteredPokemon && typeFilteredPokemon.length > 0
+    ? typeFilteredPokemon
+    : pokemon;
 
   return (
     <div className="space-y-6">
@@ -63,7 +78,75 @@ export function PokemonList({
         clearSearch={() => {
           search.clearSearch && search.clearSearch();
         }}
+        loadingType={loadingType}
+        selectedType={typeFilter?.selectedType}
+        typeFilteredPokemon={typeFilteredPokemon}
+        allPokemon={pokemon}
       />
+
+      {!search.searchResult && (
+        <div className="flex items-start justify-between gap-4 mt-8">
+          {typeFilter && (
+            <TypeFilter
+              selectedType={typeFilter.selectedType}
+              onTypeChange={typeFilter.onTypeChange}
+            />
+          )}
+
+          {/* Pagination */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="retro-border pixel-font bg-transparent"
+              onClick={() =>
+                pagination?.onPageChange(
+                  Math.max(1, pagination.currentPage - 1)
+                )
+              }
+              disabled={pagination?.currentPage === 1}
+            >
+              Previous
+            </Button>
+
+            {Array.from(
+              { length: Math.min(5, pagination?.totalPages ?? 0) },
+              (_, i) => {
+                const pageNum =
+                  Math.max(1, (pagination?.currentPage ?? 1) - 2) + i;
+                if (pageNum > (pagination?.totalPages ?? 0)) return null;
+
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={
+                      pagination?.currentPage === pageNum
+                        ? "default"
+                        : "outline"
+                    }
+                    className="retro-border pixel-font"
+                    onClick={() => pagination?.onPageChange(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              }
+            )}
+
+            <Button
+              variant="outline"
+              className="retro-border pixel-font bg-transparent"
+              onClick={() =>
+                pagination?.onPageChange(
+                  Math.min(pagination?.totalPages, pagination?.currentPage + 1)
+                )
+              }
+              disabled={pagination?.currentPage === pagination?.totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
       {loading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -92,56 +175,6 @@ export function PokemonList({
               ? "No Pokemon found for your search."
               : "No Pokemon to display."}
           </p>
-        </div>
-      )}
-
-      {!search.searchResult && (
-        <div className="flex justify-center gap-2 mt-8">
-          <Button
-            variant="outline"
-            className="retro-border pixel-font bg-transparent"
-            onClick={() =>
-              pagination?.onPageChange(Math.max(1, pagination.currentPage - 1))
-            }
-            disabled={pagination?.currentPage === 1}
-          >
-            Previous
-          </Button>
-
-          {Array.from(
-            { length: Math.min(5, pagination?.totalPages ?? 0) },
-            (_, i) => {
-              const pageNum =
-                Math.max(1, (pagination?.currentPage ?? 1) - 2) + i;
-              if (pageNum > (pagination?.totalPages ?? 0)) return null;
-
-              return (
-                <Button
-                  key={pageNum}
-                  variant={
-                    pagination?.currentPage === pageNum ? "default" : "outline"
-                  }
-                  className="retro-border pixel-font"
-                  onClick={() => pagination?.onPageChange(pageNum)}
-                >
-                  {pageNum}
-                </Button>
-              );
-            }
-          )}
-
-          <Button
-            variant="outline"
-            className="retro-border pixel-font bg-transparent"
-            onClick={() =>
-              pagination?.onPageChange(
-                Math.min(pagination?.totalPages, pagination?.currentPage + 1)
-              )
-            }
-            disabled={pagination?.currentPage === pagination?.totalPages}
-          >
-            Next
-          </Button>
         </div>
       )}
     </div>

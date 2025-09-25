@@ -13,6 +13,10 @@ type ISearchControlsProps = {
   searchResult: { name: string; id: number } | null;
   clearSearch: () => void;
   searching: boolean;
+  selectedType?: string | null;
+  typeFilteredPokemon?: any[];
+  loadingType?: boolean;
+  allPokemon?: any[];
 };
 
 export function SearchControls({
@@ -23,6 +27,10 @@ export function SearchControls({
   handleKeyPress,
   searchResult,
   clearSearch,
+  selectedType,
+  typeFilteredPokemon,
+  loadingType,
+  allPokemon,
 }: ISearchControlsProps) {
   return (
     <Card className="retro-border">
@@ -36,7 +44,7 @@ export function SearchControls({
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name or number..."
+              placeholder="Search by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -56,7 +64,7 @@ export function SearchControls({
               )}
               Search
             </Button>
-            {searchResult && (
+            {searchTerm && (
               <Button
                 onClick={clearSearch}
                 variant="outline"
@@ -67,6 +75,34 @@ export function SearchControls({
             )}
           </div>
         </div>
+
+        {(selectedType || searchTerm) && (
+          <div className="flex items-center gap-2 text-sm">
+            <span className="pixel-font text-muted-foreground">
+              {searchTerm && selectedType ? (
+                <>
+                  Search results for "{searchTerm}" in{" "}
+                  {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}{" "}
+                  type: {typeFilteredPokemon?.length ?? 0} Pokemon
+                </>
+              ) : searchTerm ? (
+                <>
+                  Search results for "{searchTerm}": {allPokemon?.length ?? 0}{" "}
+                  Pokemon found
+                </>
+              ) : selectedType ? (
+                <>
+                  Showing {typeFilteredPokemon?.length ?? 0}{" "}
+                  {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}{" "}
+                  type Pokemon
+                </>
+              ) : null}
+            </span>
+            {(loadingType || searching) && (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            )}
+          </div>
+        )}
 
         {searchResult && (
           <p className="text-sm text-muted-foreground pixel-font">
