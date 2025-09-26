@@ -35,7 +35,6 @@ export function CreateTeamDialog({
   const pathName = usePathname();
   const [teamName, setTeamName] = useState("");
   const [selectedPokemons, setSelectedPokemons] = useState<string[]>([]);
-  console.log("Available Team Pokemons:", selectedPokemons);
   const [createTeam, { isLoading }] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
 
@@ -71,7 +70,6 @@ export function CreateTeamDialog({
 
       toast.success("Team created successfully!");
 
-      // Reset form
       setTeamName("");
       setSelectedPokemons([]);
       setOpen(false);

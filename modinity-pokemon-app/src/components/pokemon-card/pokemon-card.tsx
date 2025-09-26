@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Users, Eye } from "lucide-react";
+import { Heart, Users, Eye, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getTypeColor, Pokemon } from "@/types/pokemon";
@@ -95,6 +95,7 @@ export function PokemonCard({
             }}
             disabled={isInTeam}
           >
+            <Plus className="w-3 h-3" />
             <Users className="w-3 h-3" />
           </Button>
         </div>

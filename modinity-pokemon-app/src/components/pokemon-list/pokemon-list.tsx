@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { TypeFilter } from "../type-filter/type-filter";
 import { PokemonTypeName } from "@/constants/pokemon-types";
+import { AddToTeamDialog } from "../add-to-team-dialog/add-to-team-dialog";
 
 type IPokemonListProps = {
   pokemon: Pokemon[];

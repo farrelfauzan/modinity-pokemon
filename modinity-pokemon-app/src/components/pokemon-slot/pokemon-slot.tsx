@@ -19,7 +19,6 @@ type IPokemonSlotProps = {
   teamStats: { [key: string]: number };
   typeCoverage: { [key: string]: number };
   handleRemoveFromTeam: (pokemon: any) => void;
-  onClickCard: (pokemon: Pokemon) => void;
   addSlot: () => void;
 };
 
@@ -31,7 +30,6 @@ export function PokemonSlot({
   teamStats,
   typeCoverage,
   handleRemoveFromTeam,
-  onClickCard,
   addSlot
 }: IPokemonSlotProps) {
   const [imageError, setImageError] = useState(false);
@@ -59,10 +57,9 @@ export function PokemonSlot({
                   return (
                     <div
                       key={index}
-                      className={`aspect-square border-2 border-dashed border-muted rounded-lg flex flex-col items-center justify-center retro-border p-1 sm:p-2 md:p-3 transition-all gap-1 sm:gap-2 cursor-pointer ${
+                      className={`aspect-square border-2 border-dashed border-muted rounded-lg flex flex-col items-center justify-center retro-border p-1 sm:p-2 md:p-3 transition-all gap-1 sm:gap-2 ${
                         pokemon ? "bg-card hover:shadow-md" : ""
                       }`}
-                      onClick={() => pokemon && onClickCard(pokemon)}
                     >
                       {pokemon ? (
                         <>

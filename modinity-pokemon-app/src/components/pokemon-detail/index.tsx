@@ -6,19 +6,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { ArrowLeft, Heart, Users } from "lucide-react";
 import { formatPokemonName } from "@/lib/utils";
-import { getTypeColor } from "@/types/pokemon";
+import { getTypeColor, Pokemon } from "@/types/pokemon";
 import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "../ui/badge";
+import {
+  useCreateFavoriteMutation,
+  useDeleteFavoriteMutation,
+  useGetFavoritesQuery,
+} from "@/services/favorite/favorite";
+import { toast } from "sonner";
+import { AddToTeamDialog } from "../add-to-team-dialog/add-to-team-dialog";
 
 export function PokemonDetail() {
   const params = useParams();
   const router = useRouter();
 
   const [imageError, setImageError] = useState(false);
+  const [showModalAddToTeam, setShowModalAddToTeam] = useState(false);
+  const [selectedPokemonForTeam, setSelectedPokemonForTeam] =
+    useState<Pokemon | null>(null);
 
   const { data: pokemon, isLoading } = useGetPokemonByIdQuery(
     Number(params.id)
+  );
+
+  const [createFavorite] = useCreateFavoriteMutation();
+  const { data: favoritesData, refetch } = useGetFavoritesQuery();
+  const [removeFavorite] = useDeleteFavoriteMutation();
+
+  const favoritePokemons = favoritesData?.data || [];
+  const isFavorite = favoritePokemons.some(
+    (fav) => fav.pokemonName === pokemon?.name
   );
 
   const mainStats = pokemon?.stats
@@ -51,6 +70,26 @@ export function PokemonDetail() {
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  };
+
+  const AddToFavorites = async (pokemon: Pokemon) => {
+    try {
+      await createFavorite({ pokemonName: pokemon.name }).unwrap();
+      toast.success("Pokemon added to favorites!");
+      refetch();
+    } catch (error) {
+      console.error("Failed to add Pokemon to favorites:", error);
+    }
+  };
+
+  const deleteFavorite = async (favoriteId: number) => {
+    try {
+      await removeFavorite({ id: favoriteId }).unwrap();
+      toast.success("Pokemon removed from favorites!");
+      refetch();
+    } catch (error) {
+      console.error("Failed to remove Pokemon from favorites:", error);
+    }
   };
 
   if (isLoading) {
@@ -200,13 +239,30 @@ export function PokemonDetail() {
 
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <Button className="flex-1 retro-border pixel-font bg-accent hover:bg-accent/90">
+              <Button
+                className={`flex-1 retro-border pixel-font ${
+                  isFavorite ? "bg-green-400" : "bg-accent hover:bg-accent/90"
+                }`}
+                onClick={() =>
+                  !isFavorite
+                    ? AddToFavorites(pokemon)
+                    : deleteFavorite(
+                        favoritePokemons.find(
+                          (fav) => fav.pokemonName === pokemon.name
+                        )?.id!
+                      )
+                }
+              >
                 <Heart className="w-4 h-4 mr-2" />
-                Add to Favorites
+                {isFavorite ? "Favorited" : "Add to Favorites"}
               </Button>
               <Button
                 variant="outline"
                 className="flex-1 retro-border pixel-font bg-transparent"
+                onClick={() => {
+                  setShowModalAddToTeam(true);
+                  setSelectedPokemonForTeam(pokemon);
+                }}
               >
                 <Users className="w-4 h-4 mr-2" />
                 Add to Team
@@ -307,6 +363,12 @@ export function PokemonDetail() {
           </div>
         </div>
       </div>
+      <AddToTeamDialog
+        open={showModalAddToTeam}
+        onOpenChange={setShowModalAddToTeam}
+        setOpen={setShowModalAddToTeam}
+        selectedPokemonForTeam={selectedPokemonForTeam}
+      />
     </div>
   );
 }

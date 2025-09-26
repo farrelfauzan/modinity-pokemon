@@ -1,6 +1,10 @@
 "use client";
 
-import { useGetTeamByIdQuery } from "@/services/team/team";
+import {
+  useGetTeamByIdQuery,
+  useRemovePokemonFromTeamMutation,
+  useUpdateTeamMutation,
+} from "@/services/team/team";
 import { PokemonSlot } from "../pokemon-slot/pokemon-slot";
 import { useLazyGetPokemonByNameQuery } from "@/services/pokemon/pokemon";
 import { useEffect, useState } from "react";
@@ -18,6 +22,8 @@ export function PokemonTeamDetail({ id }: { id: number }) {
   } = useGetTeamByIdQuery({ id });
   const [getPokemonByName, { data: pokemonByName }] =
     useLazyGetPokemonByNameQuery();
+
+  const [removePokemonFromTeam] = useRemovePokemonFromTeamMutation();
 
   const loadPokemons = async () => {
     if (!team?.data?.pokemons) return;
@@ -140,12 +146,14 @@ export function PokemonTeamDetail({ id }: { id: number }) {
     return coverage;
   }, {} as { [key: string]: number });
 
-  const handleRemoveFromTeam = (pokemon: Pokemon) => {
-    console.log("Remove pokemon:", pokemon.name);
-    // TODO: Implement remove functionality
+  const handleRemoveFromTeam = async (pokemon: Pokemon) => {
+    const updatedPokemons = team.data.pokemons.filter(
+      (p) => p !== pokemon.name
+    );
+    await removePokemonFromTeam({ id: team.data.id, pokemonName: pokemon.name })
   };
 
-  const availableTeamPokemons = teamPokemon.map(p => ({ name: p.name }));
+  const availableTeamPokemons = teamPokemon.map((p) => ({ name: p.name }));
 
   return (
     <div>
@@ -157,10 +165,9 @@ export function PokemonTeamDetail({ id }: { id: number }) {
         teamStats={teamStats}
         typeCoverage={typeCoverage}
         handleRemoveFromTeam={handleRemoveFromTeam}
-        onClickCard={(pokemon) => console.log("Clicked on", pokemon.name)}
         addSlot={() => setOpen(true)}
       />
-      <CreateTeamDialog 
+      <CreateTeamDialog
         open={open}
         setOpen={setOpen}
         onOpenChange={setOpen}

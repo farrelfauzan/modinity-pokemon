@@ -9,7 +9,7 @@ import {
   useLazyGetPokemonsQuery,
 } from "@/services/pokemon/pokemon";
 import { PokemonList } from "../pokemon-list/pokemon-list";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { extractPokemonId } from "@/utils/pokemon";
 import { Pokemon as PokemonType } from "@/types/pokemon";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import {
   useGetFavoritesQuery,
   useLazyGetFavoritesQuery,
 } from "@/services/favorite/favorite";
+import { AddToTeamDialog } from "../add-to-team-dialog/add-to-team-dialog";
 
 export function Pokemon() {
   const router = useRouter();
@@ -52,6 +53,8 @@ export function Pokemon() {
   const [allFilteredResults, setAllFilteredResults] = useState<PokemonType[]>(
     []
   );
+  const [showModalAddToTeam, setShowModalAddToTeam] = useState(false);
+  const [selectedPokemonForTeam, setSelectedPokemonForTeam] = useState<PokemonType | null>(null);
 
   const itemsPerPage = 8;
 
@@ -229,6 +232,11 @@ export function Pokemon() {
     }
   };
 
+  const onAddToTeam = (pokemon: PokemonType) => {
+    setShowModalAddToTeam(true);
+    setSelectedPokemonForTeam(pokemon);
+  };
+
   useEffect(() => {
     if (typeFilter.selectedType) {
       loadPokemonByType(typeFilter.selectedType);
@@ -279,56 +287,67 @@ export function Pokemon() {
   }, []);
 
   return (
-    <PokemonList
-      favorites={favoritePokemon}
-      team={[]}
-      pokemon={allPokemon}
-      onViewDetails={(pokemon) => {
-        router.push(`/pokemon/${pokemon.id}`);
-      }}
-      onToggleFavorite={(pokemon) => {
-        createFavoriteHandler(pokemon);
-      }}
-      onAddToTeam={() => {}}
-      pagination={{
-        currentPage,
-        totalPages,
-        onPageChange: setCurrentPage,
-      }}
-      search={{
-        searchTerm: searchState.searchTerm,
-        setSearchTerm: (term) =>
-          setSearchState((prev) => ({ ...prev, searchTerm: term })),
-        handleSearch: () => {
-          handleSearch();
-        },
-        searching: searchState.searching,
-        searchResult: searchState.searchResult,
-        clearSearch: () => {
-          setSearchState((prev) => ({
-            ...prev,
-            searchResult: null,
-            searchTerm: "",
-          }));
-          setAllFilteredResults([]);
-          if (typeFilter.selectedType) {
-            loadPokemonByType(typeFilter.selectedType);
-          } else {
-            loadPokemon();
-          }
-        },
-      }}
-      typeFilter={{
-        selectedType: typeFilter.selectedType,
-        onTypeChange: (type) => {
-          setCurrentPage(1); // Reset to first page when changing filter
-          setAllFilteredResults([]);
-          setTypeFilter((prev) => ({ ...prev, selectedType: type }));
-        },
-      }}
-      typeFilteredPokemon={typeFilteredPokemon}
-      loadingType={loadingPokemonsByType}
-      loading={loadingPokemonById || loadingPokemons}
-    />
+    <React.Fragment>
+      <PokemonList
+        favorites={favoritePokemon}
+        team={[]}
+        pokemon={allPokemon}
+        onViewDetails={(pokemon) => {
+          router.push(`/pokemon/${pokemon.id}`);
+        }}
+        onToggleFavorite={(pokemon) => {
+          createFavoriteHandler(pokemon);
+        }}
+        onAddToTeam={(pokemon) => {
+          onAddToTeam(pokemon);
+        }}
+        pagination={{
+          currentPage,
+          totalPages,
+          onPageChange: setCurrentPage,
+        }}
+        search={{
+          searchTerm: searchState.searchTerm,
+          setSearchTerm: (term) =>
+            setSearchState((prev) => ({ ...prev, searchTerm: term })),
+          handleSearch: () => {
+            handleSearch();
+          },
+          searching: searchState.searching,
+          searchResult: searchState.searchResult,
+          clearSearch: () => {
+            setSearchState((prev) => ({
+              ...prev,
+              searchResult: null,
+              searchTerm: "",
+            }));
+            setAllFilteredResults([]);
+            if (typeFilter.selectedType) {
+              loadPokemonByType(typeFilter.selectedType);
+            } else {
+              loadPokemon();
+            }
+          },
+        }}
+        typeFilter={{
+          selectedType: typeFilter.selectedType,
+          onTypeChange: (type) => {
+            setCurrentPage(1); 
+            setAllFilteredResults([]);
+            setTypeFilter((prev) => ({ ...prev, selectedType: type }));
+          },
+        }}
+        typeFilteredPokemon={typeFilteredPokemon}
+        loadingType={loadingPokemonsByType}
+        loading={loadingPokemonById || loadingPokemons}
+      />
+
+      <AddToTeamDialog
+        open={showModalAddToTeam}
+        onOpenChange={setShowModalAddToTeam}
+        setOpen={setShowModalAddToTeam}
+        selectedPokemonForTeam={selectedPokemonForTeam}
+      />
+    </React.Fragment>
   );
 }

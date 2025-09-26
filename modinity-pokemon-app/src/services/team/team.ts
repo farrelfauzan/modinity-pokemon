@@ -24,7 +24,7 @@ const teamApi = createApi({
     }),
     getTeamById: builder.query<TeamResponse, { id: number }>({
       query: ({ id }) => `/team/${id}`,
-      providesTags: (result, error, { id }) => [{ type: "Team", id }],
+      providesTags: ["Team"],
     }),
     createTeam: builder.mutation<CreateTeamResponse, CreateTeamDto>({
       query: (dto) => ({
@@ -43,20 +43,25 @@ const teamApi = createApi({
         method: "PATCH",
         body: dto,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Team", id },
-        "Team",
-      ],
+      invalidatesTags: ["Team"],
+    }),
+    removePokemonFromTeam: builder.mutation<
+      TeamResponse,
+      { id: number; pokemonName: string }
+    >({
+      query: ({ id, pokemonName }) => ({
+        url: `/team/${id}/remove-pokemon`,
+        method: "POST",
+        body: { pokemonName },
+      }),
+      invalidatesTags: ["Team"],
     }),
     deleteTeam: builder.mutation<DeleteTeamResponse, DeleteTeamDto>({
       query: (dto) => ({
         url: `/team/${dto.id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Team", id },
-        "Team",
-      ],
+      invalidatesTags: ["Team"],
     }),
   }),
 });
@@ -66,6 +71,7 @@ export const {
   useGetTeamByIdQuery,
   useCreateTeamMutation,
   useUpdateTeamMutation,
+  useRemovePokemonFromTeamMutation,
   useDeleteTeamMutation,
   useLazyGetTeamsQuery,
   useLazyGetTeamByIdQuery,
