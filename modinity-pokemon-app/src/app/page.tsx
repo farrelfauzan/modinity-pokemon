@@ -1,6 +1,7 @@
 import { Favorite } from "@/components/favorite";
 import { PokemonNavigation } from "@/components/navigation/pokemon-navigation";
 import { Pokemon } from "@/components/pokemon";
+import { PokemonTeam } from "@/components/pokemon-team";
 
 export default function Home() {
   return (
@@ -20,7 +21,7 @@ export default function Home() {
         <PokemonNavigation
           pokemonContent={<Pokemon />}
           favoritesContent={<Favorite />}
-          teamContent={<div>Team Content</div>}
+          teamContent={<PokemonTeam />}
         />
       </div>
     </div>
