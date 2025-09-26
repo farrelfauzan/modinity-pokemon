@@ -1,5 +1,4 @@
-import { Transform, TransformationType } from 'class-transformer';
-import { parsePhoneNumber } from 'libphonenumber-js';
+import { Transform } from 'class-transformer';
 import { castArray, isArray, isNil, map, trim } from 'lodash';
 
 /**
@@ -127,11 +126,5 @@ export function ToUpperCase(): PropertyDecorator {
     {
       toClassOnly: true,
     },
-  );
-}
-
-export function PhoneNumberSerializer(): PropertyDecorator {
-  return Transform(
-    (parameters) => parsePhoneNumber(parameters.value as string).number,
   );
 }
