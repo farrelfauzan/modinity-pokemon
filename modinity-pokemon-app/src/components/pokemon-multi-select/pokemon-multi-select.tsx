@@ -32,6 +32,7 @@ interface PokemonMultiSelectProps {
   onChange: (value: string[]) => void;
   placeholder?: string;
   maxSelections?: number;
+  availableTeamPokemons?: { name: string }[];
 }
 
 export function PokemonMultiSelect({
@@ -39,17 +40,23 @@ export function PokemonMultiSelect({
   onChange,
   placeholder = "Select Pokemon...",
   maxSelections = 6,
+  availableTeamPokemons
 }: PokemonMultiSelectProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Fetch Pokemon data
   const { data: pokemonData, isLoading } = useGetPokemonsQuery({
-    limit: 1000, // Get a large list for selection
+    limit: 2000, // Get a large list for selection
     offset: 0,
   });
 
-  const availablePokemons = pokemonData?.results || [];
+//   const availablePokemons = pokemonData?.results || [];
+const availablePokemons = availableTeamPokemons
+    ? (pokemonData?.results?.filter(
+            (p) => !availableTeamPokemons.some((atp) => atp.name === p.name)
+        ) || [])
+    : pokemonData?.results || [];
 
   // Filter Pokemon based on search query
   const filteredPokemons = availablePokemons.filter((pokemon) =>
@@ -126,9 +133,12 @@ export function PokemonMultiSelect({
                       />
                       {formatPokemonName(pokemon.name)}
                     </div>
-                    {value.length >= maxSelections && !value.includes(pokemon.name) && (
-                      <span className="text-xs text-muted-foreground">Max reached</span>
-                    )}
+                    {value.length >= maxSelections &&
+                      !value.includes(pokemon.name) && (
+                        <span className="text-xs text-muted-foreground">
+                          Max reached
+                        </span>
+                      )}
                   </CommandItem>
                 ))}
               </CommandGroup>

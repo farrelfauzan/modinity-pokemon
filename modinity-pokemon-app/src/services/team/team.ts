@@ -40,7 +40,7 @@ const teamApi = createApi({
     >({
       query: ({ id, ...dto }) => ({
         url: `/team/${id}`,
-        method: "PUT",
+        method: "PATCH",
         body: dto,
       }),
       invalidatesTags: (result, error, { id }) => [
