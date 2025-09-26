@@ -11,6 +11,10 @@ export interface ITeamService {
   findOne(id: number): Promise<{
     data: TeamEntity;
   }>;
+  removePokemonFromTeam(
+    id: number,
+    pokemonName: string,
+  ): Promise<{ data: TeamEntity }>;
   remove(id: number): Promise<{
     data: {
       message: string;

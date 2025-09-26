@@ -41,6 +41,14 @@ export class TeamController {
     return this.teamService.update(id, updateTeamDto);
   }
 
+  @Post(':id/remove-pokemon')
+  removePokemonFromTeam(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('pokemonName') pokemonName: string,
+  ) {
+    return this.teamService.removePokemonFromTeam(id, pokemonName);
+  }
+
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.teamService.remove(id);

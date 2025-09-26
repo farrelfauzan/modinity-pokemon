@@ -51,6 +51,33 @@ export class TeamService implements ITeamService {
     };
   }
 
+  async removePokemonFromTeam(
+    id: number,
+    pokemonName: string,
+  ): Promise<{ data: TeamEntity }> {
+    const team = await this.teamRepository.findOne({ where: { id } });
+
+    if (!team) {
+      throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (!team.pokemons.includes(pokemonName)) {
+      throw new HttpException(
+        'Pokemon not found in the team',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const updatedPokemons = team.pokemons.filter((p) => p !== pokemonName);
+    team.pokemons = updatedPokemons;
+
+    await this.teamRepository.save(team);
+
+    return {
+      data: team,
+    };
+  }
+
   async update(
     id: number,
     options: UpdateTeamDto,
