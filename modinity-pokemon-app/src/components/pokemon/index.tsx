@@ -42,7 +42,6 @@ export function Pokemon() {
   }>({
     selectedType: null,
     onTypeChange: (type) => {
-      // Reset to page 1 when user selects a new type
       setCurrentPage(1);
       setTypeFilter((prev) => ({ ...prev, selectedType: type }));
     },

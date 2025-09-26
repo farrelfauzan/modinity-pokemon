@@ -8,28 +8,37 @@ import { Progress } from "../ui/progress";
 import { Team } from "@/types/team";
 import { Badge } from "../ui/badge";
 import { getTypeColor, Pokemon } from "@/types/pokemon";
+import Image from "next/image";
+import { useState } from "react";
 
 type IPokemonSlotProps = {
-    team: Team[];
-    teamPokemon: Pokemon[];
-    loading: boolean;
-    averageStats: { name: string; average: number }[];
-    teamStats: { [key: string]: number };
-    typeCoverage: { [key: string]: number };
-    handleDragStart: (index: number) => void;
-    handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
-    handleDrop: (e: React.DragEvent<HTMLDivElement>, index: number) => void;
-    handleRemoveFromTeam: (pokemon: any) => void;
-}
+  team: Team;
+  teamPokemon: Pokemon[];
+  loading: boolean;
+  averageStats: { name: string; average: number }[];
+  teamStats: { [key: string]: number };
+  typeCoverage: { [key: string]: number };
+  handleRemoveFromTeam: (pokemon: any) => void;
+};
 
-export function PokemonSlot({ team, teamPokemon, loading, averageStats, teamStats, typeCoverage, handleDragStart, handleDragOver, handleDrop, handleRemoveFromTeam }: IPokemonSlotProps) {
+export function PokemonSlot({
+  team,
+  teamPokemon,
+  loading,
+  averageStats,
+  teamStats,
+  typeCoverage,
+  handleRemoveFromTeam,
+}: IPokemonSlotProps) {
+  const [imageError, setImageError] = useState(false);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-8">
       <Card className="retro-border">
         <CardHeader>
           <CardTitle className="pixel-font text-primary flex items-center gap-2">
             <Users className="w-5 h-5" />
-            Your Pokemon Team ({team.length}/6)
+            {team.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -40,41 +49,46 @@ export function PokemonSlot({ team, teamPokemon, loading, averageStats, teamStat
           ) : (
             <>
               {/* Team Slots */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
                 {Array.from({ length: 6 }, (_, index) => {
                   const pokemon = teamPokemon[index];
                   return (
                     <div
                       key={index}
-                      className={`aspect-square border-2 border-dashed border-muted rounded-lg flex flex-col items-center justify-center retro-border p-4 transition-all ${
-                        pokemon ? "bg-card cursor-move hover:shadow-md" : ""
+                      className={`aspect-square border-2 border-dashed border-muted rounded-lg flex flex-col items-center justify-center retro-border p-2 transition-all ${
+                        pokemon ? "bg-card hover:shadow-md" : ""    
                       }`}
-                      draggable={!!pokemon}
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
                     >
                       {pokemon ? (
                         <>
-                          <img
-                            src={
-                              pokemon.sprites.other["official-artwork"]
-                                .front_default || pokemon.sprites.front_default
-                            }
-                            alt={pokemon.name}
-                            className="w-16 h-16 object-contain mb-2"
-                          />
-                          <span className="pixel-font text-xs text-center font-bold">
+                          {!imageError ? (
+                            <Image
+                              src={
+                                pokemon.sprites.other["official-artwork"]
+                                  .front_default ||
+                                pokemon.sprites.front_default
+                              }
+                              alt={pokemon.name}
+                              width={48}
+                              height={48}
+                              className="w-[50px] h-[50px] object-contain mb-1"
+                              onError={() => setImageError(true)}
+                            />
+                          ) : (
+                            <span className="text-lg">❓</span>
+                          )}
+
+                          <span className="pixel-font text-[10px] text-center font-bold leading-tight">
                             #{pokemon.id.toString().padStart(3, "0")}
                           </span>
-                          <span className="pixel-font text-xs text-center">
+                          <span className="pixel-font text-[9px] text-center leading-tight truncate w-full px-1">
                             {formatPokemonName(pokemon.name)}
                           </span>
-                          <div className="flex gap-1 mt-1">
+                          <div className="flex gap-0.5 mt-0.5">
                             {pokemon.types.map((type) => (
                               <div
                                 key={type.type.name}
-                                className={`w-3 h-3 rounded-full ${getTypeColor(
+                                className={`w-2 h-2 rounded-full ${getTypeColor(
                                   type.type.name
                                 )}`}
                                 title={formatPokemonName(type.type.name)}
@@ -84,14 +98,14 @@ export function PokemonSlot({ team, teamPokemon, loading, averageStats, teamStat
                           <Button
                             size="sm"
                             variant="outline"
-                            className="pixel-font text-xs mt-2 bg-transparent p-1"
+                            className="pixel-font text-[8px] mt-1 bg-transparent p-0.5 h-5 w-5"
                             onClick={() => handleRemoveFromTeam(pokemon)}
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-2.5 h-2.5" />
                           </Button>
                         </>
                       ) : (
-                        <span className="text-muted-foreground pixel-font text-sm">
+                        <span className="text-muted-foreground pixel-font text-xs">
                           Slot {index + 1}
                         </span>
                       )}
@@ -103,7 +117,7 @@ export function PokemonSlot({ team, teamPokemon, loading, averageStats, teamStat
               <p className="text-center text-muted-foreground pixel-font text-sm">
                 {teamPokemon.length === 0
                   ? "Build your dream team of up to 6 Pokemon!"
-                  : "Drag and drop to reorder your team!"}
+                  : "Click the trash icon to remove Pokemon from your team"}
               </p>
             </>
           )}

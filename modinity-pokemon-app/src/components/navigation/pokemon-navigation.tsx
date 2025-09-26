@@ -3,6 +3,7 @@
 import { Heart, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useGetFavoritesQuery } from "@/services/favorite/favorite";
+import { useGetTeamsQuery } from "@/services/team/team";
 
 type IPokemonNavigationProps = {
   pokemonContent: React.ReactNode;
@@ -16,6 +17,7 @@ export function PokemonNavigation({
   teamContent,
 }: IPokemonNavigationProps) {
   const { data: favorites } = useGetFavoritesQuery();
+  const { data: teams } = useGetTeamsQuery();
 
   return (
     <Tabs defaultValue="pokemon" className="w-full">
@@ -27,7 +29,7 @@ export function PokemonNavigation({
         </TabsTrigger>
         <TabsTrigger value="team" className="pixel-font">
           <Users className="w-4 h-4 mr-1" />
-          My Team (0)
+          My Team ({teams?.data.length || 0})
         </TabsTrigger>
       </TabsList>
       <TabsContent value="pokemon" className="mt-4">
