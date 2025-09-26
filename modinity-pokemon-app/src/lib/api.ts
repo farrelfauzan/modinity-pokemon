@@ -17,7 +17,7 @@ const baseQueryPokedex = fetchBaseQuery({
 });
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:3001/api",
+  baseUrl: process.env.API_URL as string,
   paramsSerializer: (params) => qs.stringify(params),
   prepareHeaders: (headers) => {
     return headers;
@@ -48,8 +48,7 @@ export const apiBaseQueryPokedex: BaseQueryFn<
 
   if (error) {
     const err: BaseErrorResponse = error as BaseErrorResponse;
-
-    return { error };
+    return { error: err };
   }
 
   return { data };
