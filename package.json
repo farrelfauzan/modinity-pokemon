@@ -4,7 +4,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-service": "cd modinity-pokemon-service && npm start:dev"
+    "start-app": "cd modinity-pokemon-app && npm start",
+    "start-service": "cd modinity-pokemon-service && npm start",
+    "start-service:dev": "cd modinity-pokemon-service && npm start:dev",
+    "start-app:dev": "cd modinity-pokemon-app && npm run dev",
+    "build-app": "cd modinity-pokemon-app && npm run build",
+    "build-service": "cd modinity-pokemon-service && npm run build",
+    "install:app": "cd modinity-pokemon-app && npm install",
+    "install:service": "cd modinity-pokemon-service && npm install"
   },
   "author": "",
   "license": "ISC",
