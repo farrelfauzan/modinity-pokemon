@@ -34,7 +34,6 @@ export async function bootstrap(): Promise<NestFastifyApplication> {
     .setTitle('Modinity Pokemon Service')
     .setDescription('The Modinity Pokemon Service API description')
     .setVersion('1.0')
-    .addTag('pokemon')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, swagger);
