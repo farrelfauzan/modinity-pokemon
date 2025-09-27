@@ -76,34 +76,6 @@ export function SearchControls({
           </div>
         </div>
 
-        {(selectedType || searchTerm) && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="pixel-font text-muted-foreground">
-              {searchTerm && selectedType ? (
-                <>
-                  Search results for "{searchTerm}" in{" "}
-                  {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}{" "}
-                  type: {typeFilteredPokemon?.length ?? 0} Pokemon
-                </>
-              ) : searchTerm ? (
-                <>
-                  Search results for "{searchTerm}": {allPokemon?.length ?? 0}{" "}
-                  Pokemon found
-                </>
-              ) : selectedType ? (
-                <>
-                  Showing {typeFilteredPokemon?.length ?? 0}{" "}
-                  {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}{" "}
-                  type Pokemon
-                </>
-              ) : null}
-            </span>
-            {(loadingType || searching) && (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            )}
-          </div>
-        )}
-
         {searchResult && (
           <p className="text-sm text-muted-foreground pixel-font">
             Found: {searchResult.name} (#{searchResult.id})
