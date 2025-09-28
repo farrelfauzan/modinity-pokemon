@@ -27,18 +27,12 @@ export class TeamService implements ITeamService {
       );
     }
 
-    const checkPokemonsLength = await this.teamRepository.findOne({
-      where: { name: options.name },
-    });
-
-    pokemonsLength =
-      options.pokemons.length +
-      (checkPokemonsLength ? checkPokemonsLength.pokemons.length : 0);
+    pokemonsLength = options.pokemons.length;
 
     if (pokemonsLength > 6) {
       throw new HttpException(
         'A team can have a maximum of 6 pokemons',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_ACCEPTABLE,
       );
     }
 
